@@ -1,0 +1,20 @@
+.cell{
+    width: 70px;
+    height: 70px;
+    border: 2px solid black;
+    line-height: 70px;
+    font-size: 60px;
+    cursor: pointer;
+   
+}
+#GameContainer{
+    text-align: center;
+    margin-top: 50px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+#cellcontainer{
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    width: 225px;
+    margin: auto;
+}

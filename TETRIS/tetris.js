@@ -83,7 +83,10 @@ document.addEventListener("keydown", (e) => {
        if(checkColision()) { player.position.x--}
     }
     if(e.key == "ArrowDown") {player.position.y++
-      if(checkColision()) { player.position.y--}
+      if(checkColision()) { 
+        player.position.y--
+        solidPiece();
+      }
     }
     
 })
@@ -94,5 +97,16 @@ function checkColision() {
       return (col != 0 && board[y+player.position.y]?.[x+player.position.x] != 0)
     })
   })
+}
+function solidPiece(){
+  player.shape.forEach((row, y) => {
+    row.forEach((col, x) => {
+            if(col == 1){
+              board[y + player.position.y][ x + player.position.x] = 1
+            }
+    }) 
+  })
+  player.position.x = 5;
+  player.position.y = 5;
 }
 Upload();
