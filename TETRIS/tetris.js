@@ -40,6 +40,7 @@ const board = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [1,1,1,1,1,1,1,1,0,0,1,1,1,1]
 ]
 
@@ -48,7 +49,39 @@ const player = {
   shape: [[1, 1,],
           [1, 1]]
 }
-function Upload(){
+const pieces = [
+  [[1,1],
+   [1,1]],
+
+  [[1,1,1,1]],
+
+  [[0,1,0],
+   [1,1,1]],
+
+   [[1,1,0],
+    [0,1,1]],
+
+    [[1,0],
+    [1,0],
+    [1,1]]
+
+  
+]
+let dropCounter = 0;
+let lastTime = 0;
+function Upload(time = 0){
+  let deltaTime = time - lastTime;
+  lastTime = time;
+  dropCounter += deltaTime;
+  if(dropCounter > 1000){
+    player.position.y++;
+    if(checkColision()) {
+      player.position.y--;
+      solidPiece();
+      RemoveRows();
+    }
+    dropCounter = 0;
+  }
   draw();
   window.requestAnimationFrame(Upload);
 }
@@ -63,11 +96,10 @@ function draw(){
               ctx.fillRect(x, y, 1, 1)
             }
           })
-
    });
    player.shape.forEach((row, y) => {
       row.forEach((col, x) => {
-        if(col = 1 ){
+        if(col == 1 ){
           ctx.fillStyle = "#dd0000"
           ctx.fillRect(x + player.position.x , y + player.position.y, 1, 1)
         }
@@ -86,8 +118,26 @@ document.addEventListener("keydown", (e) => {
       if(checkColision()) { 
         player.position.y--
         solidPiece();
+        RemoveRows();
       }
+    
     }
+    if(e.key == "ArrowUp") {
+      const rotated = [];
+      for(let i = 0; i < player.shape[0].length; i++){
+        const row = [];
+        for(let j = player.shape.length-1; j >= 0; j--){
+          row.push(player.shape[j][i])
+        }
+        rotated.push(row);
+    }
+     const prevShape = player.shape;
+      player.shape = rotated;
+   if(checkColision()) {
+    player.shape = prevShape;
+    }
+    }
+   
     
 })
 
@@ -101,12 +151,32 @@ function checkColision() {
 function solidPiece(){
   player.shape.forEach((row, y) => {
     row.forEach((col, x) => {
+            console.log(y + player.position.y, x + player.position.x);
             if(col == 1){
               board[y + player.position.y][ x + player.position.x] = 1
             }
     }) 
   })
-  player.position.x = 5;
-  player.position.y = 5;
+
+   player.shape = pieces[Math.floor(Math.random() * pieces.length)];
+  player.position.x = Math.floor(Math.random() * boardWidth/2);
+  player.position.y = 0;
+   if(checkColision()){
+    alert("Game Over")
+    board.forEach(row => row.fill(0));
+   }
+}
+function RemoveRows(){
+   const rowsToRemove = [];
+   board.forEach((row, y) => {
+    if(row.every(col => col == 1)){
+      rowsToRemove.push(y);
+    }
+    })
+    rowsToRemove.forEach((row) => {
+       board.splice(row, 1);
+       const newRow = new Array(boardWidth).fill(0);
+       board.unshift(newRow);
+    })
 }
 Upload();
